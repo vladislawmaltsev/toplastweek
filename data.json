@@ -7,28 +7,28 @@
       "top": [
         {
           "name": "Александр Мордвинцев",
-          "photo": "photos/mordvintsev2303.jpg",
+          "photo": "photos/mordvintsev2303.png",
           "clients": 46,
           "place": 1,
           "title": "Повелитель сделок"
         },
         {
           "name": "Валерия Сундукова",
-          "photo": "photos/sundukova2303.jpg",
+          "photo": "photos/sundukova2303.png",
           "clients": 40,
           "place": 2,
           "title": "Машина закрытий"
         },
         {
           "name": "Екатерина Нагорная",
-          "photo": "photos/nagornaya2303.jpg",
+          "photo": "photos/nagornaya2303.png",
           "clients": 40,
           "place": 3,
           "title": "Снайпер конверсий"
         },
         {
           "name": "Анастасия Лыкова",
-          "photo": "photos/lykova2303.jpg",
+          "photo": "photos/lykova2303.png",
           "clients": 40,
           "place": 4,
           "title": "Мастер обработок"
@@ -42,21 +42,21 @@
       "top": [
         {
           "name": "Александр Мордвинцев",
-          "photo": "photos/mordvintsev1603.jpg",
+          "photo": "photos/mordvintsev1603.png",
           "clients": 71,
           "place": 1,
           "title": "Повелитель чатов"
         },
         {
           "name": "Юлия Богатынская",
-          "photo": "photos/bogatynskaya1603.jpg",
+          "photo": "photos/bogatynskaya1603.png",
           "clients": 69,
           "place": 2,
           "title": "Машина закрытий"
         },
         {
           "name": "Анастасия Лыкова",
-          "photo": "photos/lykova1603.jpg",
+          "photo": "photos/lykova1603.png",
           "clients": 65,
           "place": 3,
           "title": "Снайпер конверсий"
