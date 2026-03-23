@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Коллекция Героев — ОП Чаты Умскул</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;500;600;700&family=Russo+One&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+/* ==========================================
+   CSS VARIABLES
+   ========================================== */
+:root {
+  --bg: #08080f;
+  --bg-card: #111120;
+  --bg-surface: #14142a;
+  --bg-hover: #1a1a36;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --text: #e0e0f0;
+  --text-muted: #5a5a7a;
+  --text-dim: #3a3a5a;
+  --gold: #FFD700;
+  --gold2: #FFA500;
+  --gold-glow: rgba(255,215,0,0.4);
+  --purple: #C0C0FF;
+  --purple2: #7B68EE;
+  --purple-glow: rgba(123,104,238,0.4);
+  --red: #FF6B6B;
+  --red2: #EE4444;
+  --red-glow: rgba(238,68,68,0.4);
+  --green: #50fa7b;
+}
+ 
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+ 
+body {
+  font-family: 'Oswald', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+ 
+/* ==========================================
+   BACKGROUND
+   ========================================== */
+.bg-grid {
+  position: fixed; inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
+  background-size: 60px 60px;
+  z-index: 0; pointer-events: none;
+}
+ 
+.bg-particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.particle {
+  position: absolute; width: 3px; height: 3px; background: var(--gold);
+  border-radius: 50%; opacity: 0; animation: float-up linear infinite;
+}
+@keyframes float-up {
+  0% { transform: translateY(100vh) scale(0); opacity: 0; }
+  10% { opacity: 0.5; } 90% { opacity: 0.2; }
+  100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+}
+ 
+/* ==========================================
+   NAV
+   ========================================== */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(8,8,15,0.85); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+}
+.nav-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 56px;
+}
+.nav-brand {
+  font-family: 'Bebas Neue', sans-serif; font-size: 22px;
+  letter-spacing: 2px; color: var(--gold);
+  cursor: pointer;
+}
+.nav-brand span { color: var(--text-muted); font-size: 14px; letter-spacing: 4px; }
+.nav-links { display: flex; gap: 4px; }
+.nav-link {
+  font-size: 13px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-muted); padding: 8px 16px; border-radius: 8px;
+  cursor: pointer; transition: all 0.3s; border: none; background: none;
+  font-family: 'Oswald', sans-serif;
+}
+.nav-link:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.nav-link.active { color: var(--gold); background: rgba(255,215,0,0.08); }
+ 
+@media(max-width:600px) {
+  .nav-link { font-size: 11px; padding: 6px 10px; letter-spacing: 1px; }
+}
+ 
+/* ==========================================
+   PAGES
+   ========================================== */
+.page { display: none; position: relative; z-index: 1; }
+.page.active { display: block; }
+ 
+.page-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+ 
+/* ==========================================
+   HERO (Home)
+   ========================================== */
+.hero { text-align: center; padding: 50px 20px 20px; }
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(42px, 7vw, 88px); line-height: 0.95; letter-spacing: 3px;
+  background: linear-gradient(135deg, #FFD700, #FFA500, #FF6347, #FFD700);
+  background-size: 300% 300%;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  animation: gradient-shift 4s ease infinite, fadeDown 0.8s ease-out both;
+}
+.hero-sub {
+  font-size: clamp(14px, 2vw, 18px); font-weight: 300;
+  letter-spacing: 6px; color: var(--text-muted); text-transform: uppercase;
+  margin-top: 10px; animation: fadeDown 0.8s ease-out 0.2s both;
+}
+.hero-week {
+  font-family: 'Press Start 2P', monospace; font-size: clamp(9px, 1.3vw, 13px);
+  color: var(--gold); margin-top: 16px; letter-spacing: 2px;
+  animation: fadeDown 0.8s ease-out 0.4s both;
+}
+@keyframes gradient-shift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+ 
+/* ==========================================
+   TOP-3 CARDS
+   ========================================== */
+.cards-row {
+  display: flex; justify-content: center; align-items: stretch;
+  gap: 24px; padding: 30px 0 50px; max-width: 1100px; margin: 0 auto;
+}
+.card-w { perspective: 1000px; flex: 1; min-width: 0; max-width: 360px; animation: fadeUp 0.7s ease-out both; }
+.card-w:nth-child(1) { animation-delay: 0.3s; }
+.card-w:nth-child(2) { animation-delay: 0.5s; }
+.card-w:nth-child(3) { animation-delay: 0.7s; }
+ 
+.card {
+  position: relative; width: 100%; border-radius: 18px; background: var(--bg-card);
+  overflow: hidden; cursor: pointer; transition: transform 0.4s, box-shadow 0.4s;
+  transform-style: preserve-3d; display: flex; flex-direction: column; height: 100%;
+}
+.card:hover { transform: translateY(-10px) rotateY(2deg) rotateX(1deg); }
+ 
+.card[data-place="1"] { box-shadow: 0 0 0 1px rgba(255,215,0,.2), 0 16px 50px -10px rgba(255,215,0,.12); }
+.card[data-place="1"]:hover { box-shadow: 0 0 0 1px rgba(255,215,0,.4), 0 24px 70px -10px rgba(255,215,0,.25), 0 0 100px -20px rgba(255,215,0,.2); }
+.card[data-place="2"] { box-shadow: 0 0 0 1px rgba(123,104,238,.2), 0 16px 50px -10px rgba(123,104,238,.12); }
+.card[data-place="2"]:hover { box-shadow: 0 0 0 1px rgba(123,104,238,.4), 0 24px 70px -10px rgba(123,104,238,.25); }
+.card[data-place="3"] { box-shadow: 0 0 0 1px rgba(238,68,68,.2), 0 16px 50px -10px rgba(238,68,68,.12); }
+.card[data-place="3"]:hover { box-shadow: 0 0 0 1px rgba(238,68,68,.4), 0 24px 70px -10px rgba(238,68,68,.25); }
+ 
+.card-holo {
+  position: absolute; inset: 0; z-index: 10; pointer-events: none;
+  border-radius: 18px; opacity: 0; transition: opacity 0.4s; mix-blend-mode: overlay;
+}
+.card:hover .card-holo { opacity: 1; }
+ 
+.card-rank {
+  position: absolute; top: 12px; left: 14px; z-index: 5;
+  font-family: 'Bebas Neue', sans-serif; font-size: 38px; line-height: 1; opacity: 0.12;
+}
+.card[data-place="1"] .card-rank { color: var(--gold); }
+.card[data-place="2"] .card-rank { color: var(--purple); }
+.card[data-place="3"] .card-rank { color: var(--red); }
+ 
+.card-rarity {
+  position: absolute; top: 14px; right: 14px; z-index: 5;
+  font-family: 'Press Start 2P', monospace; font-size: 7px; letter-spacing: 2px;
+  padding: 4px 8px; border-radius: 4px;
+}
+.card[data-place="1"] .card-rarity { background: rgba(255,215,0,.15); color: var(--gold); border: 1px solid rgba(255,215,0,.3); }
+.card[data-place="2"] .card-rarity { background: rgba(123,104,238,.15); color: var(--purple); border: 1px solid rgba(123,104,238,.3); }
+.card[data-place="3"] .card-rarity { background: rgba(238,68,68,.15); color: var(--red); border: 1px solid rgba(238,68,68,.3); }
+ 
+.card-photo { position: relative; width: 100%; background: #0a0a16; }
+.card-photo img { width: 100%; height: auto; display: block; transition: transform 0.5s; }
+.card:hover .card-photo img { transform: scale(1.03); }
+.card-photo-fade {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 40px;
+  background: linear-gradient(to top, var(--bg-card), transparent);
+  z-index: 2; pointer-events: none;
+}
+ 
+.card-body { padding: 14px 18px 18px; flex: 1; display: flex; flex-direction: column; }
+.card-name { font-family: 'Russo One', sans-serif; font-size: 17px; letter-spacing: 0.5px; margin-bottom: 2px; }
+.card[data-place="1"] .card-name { color: var(--gold); font-size: 19px; }
+.card[data-place="2"] .card-name { color: var(--purple); }
+.card[data-place="3"] .card-name { color: var(--red); }
+ 
+.card-role { font-size: 10px; font-weight: 400; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 14px; }
+ 
+.card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.stat {
+  background: rgba(255,255,255,.025); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 6px; text-align: center;
+}
+.stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 24px; line-height: 1; }
+.card[data-place="1"] .stat-val { color: var(--gold); }
+.card[data-place="2"] .stat-val { color: var(--purple); }
+.card[data-place="3"] .stat-val { color: var(--red); }
+.stat-lbl { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-top: 2px; }
+.stat-main { grid-column: 1 / -1; }
+.stat-main .stat-val { font-size: 36px; }
+ 
+.power-row { grid-column: 1 / -1; padding: 4px 0 0; }
+.power-lbl { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 5px; }
+.power-track { width: 100%; height: 5px; background: rgba(255,255,255,.04); border-radius: 3px; overflow: hidden; }
+.power-fill { height: 100%; border-radius: 3px; width: 0; transition: width 1.5s ease-out; }
+.card[data-place="1"] .power-fill { background: linear-gradient(90deg, var(--gold), var(--gold2)); }
+.card[data-place="2"] .power-fill { background: linear-gradient(90deg, var(--purple2), var(--purple)); }
+.card[data-place="3"] .power-fill { background: linear-gradient(90deg, var(--red2), var(--red)); }
+ 
+.card-title-row {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px 0 0; margin-top: auto;
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}
+ 
+@media(max-width:900px) { .cards-row { flex-direction: column; align-items: center; } .card-w { max-width: 400px; width: 100%; } }
+ 
+/* ==========================================
+   SECTION HEADERS
+   ========================================== */
+.section-hdr {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 20px; padding-top: 40px;
+}
+.section-hdr h2 {
+  font-family: 'Bebas Neue', sans-serif; font-size: 32px;
+  letter-spacing: 2px; color: var(--text);
+}
+.section-hdr .see-all {
+  font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gold); cursor: pointer; border: none; background: none;
+  font-family: 'Oswald', sans-serif; transition: opacity 0.3s;
+}
+.section-hdr .see-all:hover { opacity: 0.7; }
+ 
+/* ==========================================
+   LEADERBOARD TABLE
+   ========================================== */
+.lb-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin-bottom: 50px; }
+.lb-row {
+  background: var(--bg-card); cursor: pointer; transition: background 0.3s;
+}
+.lb-row:hover { background: var(--bg-hover); }
+.lb-row td {
+  padding: 14px 16px; border: none;
+  font-size: 14px; font-weight: 500;
+}
+.lb-row td:first-child { border-radius: 10px 0 0 10px; }
+.lb-row td:last-child { border-radius: 0 10px 10px 0; }
+ 
+.lb-pos {
+  font-family: 'Bebas Neue', sans-serif; font-size: 22px;
+  color: var(--text-dim); width: 50px; text-align: center;
+}
+.lb-pos.gold { color: var(--gold); }
+.lb-pos.silver { color: var(--purple); }
+.lb-pos.bronze { color: var(--red); }
+ 
+.lb-name-cell { display: flex; align-items: center; gap: 12px; }
+.lb-avatar {
+  width: 36px; height: 36px; border-radius: 8px; object-fit: cover;
+  border: 1px solid var(--border);
+}
+.lb-name { font-family: 'Russo One', sans-serif; font-size: 14px; }
+.lb-val { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--gold); }
+.lb-sub { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; }
+ 
+.lb-badges { display: flex; gap: 4px; }
+.lb-badge {
+  font-family: 'Press Start 2P', monospace; font-size: 6px;
+  padding: 3px 6px; border-radius: 3px; letter-spacing: 1px;
+}
+.lb-badge.legendary { background: rgba(255,215,0,.12); color: var(--gold); }
+.lb-badge.epic { background: rgba(123,104,238,.12); color: var(--purple); }
+.lb-badge.rare { background: rgba(238,68,68,.12); color: var(--red); }
+ 
+@media(max-width:700px) {
+  .lb-row td { padding: 10px 8px; font-size: 12px; }
+  .lb-badges { display: none; }
+  .lb-avatar { width: 28px; height: 28px; }
+}
+ 
+/* ==========================================
+   ARCHIVE
+   ========================================== */
+.archive-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px; padding-bottom: 60px;
+}
+.archive-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 20px; cursor: pointer; transition: all 0.3s;
+}
+.archive-card:hover { border-color: var(--border-hover); background: var(--bg-hover); transform: translateY(-4px); }
+.archive-week {
+  font-family: 'Russo One', sans-serif; font-size: 16px; color: var(--text); margin-bottom: 4px;
+}
+.archive-date { font-size: 11px; color: var(--text-muted); letter-spacing: 2px; margin-bottom: 14px; }
+.archive-top3 { display: flex; flex-direction: column; gap: 8px; }
+.archive-entry { display: flex; align-items: center; gap: 10px; }
+.archive-medal { font-size: 16px; width: 24px; text-align: center; }
+.archive-img { width: 32px; height: 32px; border-radius: 6px; object-fit: cover; }
+.archive-info { flex: 1; }
+.archive-n { font-size: 13px; font-weight: 600; }
+.archive-c { font-family: 'Bebas Neue', sans-serif; font-size: 16px; color: var(--gold); }
+ 
+/* ==========================================
+   PROFILE
+   ========================================== */
+.profile-header {
+  display: flex; align-items: center; gap: 30px;
+  padding: 40px 0 30px; flex-wrap: wrap;
+}
+.profile-photo {
+  width: 120px; height: 120px; border-radius: 16px; object-fit: cover;
+  border: 2px solid rgba(255,215,0,.2);
+}
+.profile-info h2 {
+  font-family: 'Russo One', sans-serif; font-size: 28px; color: var(--gold);
+}
+.profile-role { font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); margin-top: 4px; }
+.profile-stats-row { display: flex; gap: 24px; margin-top: 14px; flex-wrap: wrap; }
+.profile-stat { text-align: center; }
+.profile-stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--gold); line-height: 1; }
+.profile-stat-lbl { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
+ 
+.profile-collection-title {
+  font-family: 'Bebas Neue', sans-serif; font-size: 26px;
+  letter-spacing: 2px; margin: 30px 0 16px; color: var(--text);
+}
+ 
+.profile-cards-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px; padding-bottom: 60px;
+}
+.mini-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden; transition: all 0.3s; cursor: pointer;
+}
+.mini-card:hover { border-color: var(--border-hover); transform: translateY(-4px); }
+.mini-card[data-place="1"] { border-color: rgba(255,215,0,.15); }
+.mini-card[data-place="1"]:hover { border-color: rgba(255,215,0,.35); box-shadow: 0 8px 30px rgba(255,215,0,.1); }
+.mini-card[data-place="2"] { border-color: rgba(123,104,238,.15); }
+.mini-card[data-place="2"]:hover { border-color: rgba(123,104,238,.35); }
+.mini-card[data-place="3"] { border-color: rgba(238,68,68,.15); }
+.mini-card[data-place="3"]:hover { border-color: rgba(238,68,68,.35); }
+ 
+.mini-card-top { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; }
+.mini-card-week { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; }
+.mini-card-rarity { font-family: 'Press Start 2P', monospace; font-size: 6px; letter-spacing: 1px; padding: 3px 6px; border-radius: 3px; }
+.mini-card[data-place="1"] .mini-card-rarity { background: rgba(255,215,0,.12); color: var(--gold); }
+.mini-card[data-place="2"] .mini-card-rarity { background: rgba(123,104,238,.12); color: var(--purple); }
+.mini-card[data-place="3"] .mini-card-rarity { background: rgba(238,68,68,.12); color: var(--red); }
+ 
+.mini-card-body { display: flex; align-items: center; gap: 12px; padding: 0 14px 14px; }
+.mini-card-place {
+  font-family: 'Bebas Neue', sans-serif; font-size: 32px; opacity: 0.2;
+}
+.mini-card[data-place="1"] .mini-card-place { color: var(--gold); }
+.mini-card[data-place="2"] .mini-card-place { color: var(--purple); }
+.mini-card[data-place="3"] .mini-card-place { color: var(--red); }
+.mini-card-clients { font-family: 'Bebas Neue', sans-serif; font-size: 28px; }
+.mini-card[data-place="1"] .mini-card-clients { color: var(--gold); }
+.mini-card[data-place="2"] .mini-card-clients { color: var(--purple); }
+.mini-card[data-place="3"] .mini-card-clients { color: var(--red); }
+.mini-card-clbl { font-size: 10px; color: var(--text-muted); letter-spacing: 1px; }
+.mini-card-title-text { font-size: 10px; color: var(--text-dim); letter-spacing: 1px; font-style: italic; }
+ 
+/* ==========================================
+   BACK BUTTON
+   ========================================== */
+.back-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 500;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted);
+  cursor: pointer; border: none; background: none;
+  padding: 12px 0; transition: color 0.3s;
+}
+.back-btn:hover { color: var(--gold); }
+ 
+/* ==========================================
+   FOOTER
+   ========================================== */
+.site-footer {
+  position: relative; z-index: 1; text-align: center;
+  padding: 30px 20px 50px; border-top: 1px solid var(--border);
+}
+.site-footer p {
+  font-family: 'Press Start 2P', monospace; font-size: 8px;
+  color: var(--text-dim); letter-spacing: 2px; line-height: 2.2;
+}
+ 
+/* ==========================================
+   PLACEHOLDER
+   ========================================== */
+.placeholder-img {
+  width: 100%; aspect-ratio: 1; background: var(--bg-surface);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px; color: var(--text-dim);
+}
+</style>
+</head>
+<body>
+ 
+<div class="bg-grid"></div>
+<div class="bg-particles" id="particles"></div>
+ 
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand" onclick="navigate('home')">⚡ ГЕРОИ ЧАТОВ <span>УМСКУЛ</span></div>
+    <div class="nav-links">
+      <button class="nav-link active" data-page="home" onclick="navigate('home')">Главная</button>
+      <button class="nav-link" data-page="archive" onclick="navigate('archive')">Архив</button>
+      <button class="nav-link" data-page="leaderboard" onclick="navigate('leaderboard')">Рейтинг</button>
+    </div>
+  </div>
+</nav>
+ 
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="page-container">
+    <div class="hero">
+      <h1 class="hero-title">ГЕРОИ НЕДЕЛИ</h1>
+      <p class="hero-sub">коллекционное издание</p>
+      <p class="hero-week" id="homeWeekLabel"></p>
+    </div>
+    <div class="cards-row" id="homeCards"></div>
+ 
+    <div class="section-hdr">
+      <h2>🏆 Лидерборд сезона</h2>
+      <button class="see-all" onclick="navigate('leaderboard')">Все →</button>
+    </div>
+    <table class="lb-table" id="homeLeaderboard"></table>
+  </div>
+</div>
+ 
+<!-- ARCHIVE PAGE -->
+<div class="page" id="page-archive">
+  <div class="page-container">
+    <div class="section-hdr"><h2>📚 Архив выпусков</h2></div>
+    <div class="archive-grid" id="archiveGrid"></div>
+  </div>
+</div>
+ 
+<!-- LEADERBOARD PAGE -->
+<div class="page" id="page-leaderboard">
+  <div class="page-container">
+    <div class="section-hdr"><h2>🏆 Рейтинг всех героев</h2></div>
+    <table class="lb-table" id="fullLeaderboard"></table>
+  </div>
+</div>
+ 
+<!-- PROFILE PAGE -->
+<div class="page" id="page-profile">
+  <div class="page-container">
+    <button class="back-btn" onclick="history.back()">← Назад</button>
+    <div id="profileContent"></div>
+  </div>
+</div>
+ 
+<!-- WEEK DETAIL PAGE -->
+<div class="page" id="page-week">
+  <div class="page-container">
+    <button class="back-btn" onclick="navigate('archive')">← Архив</button>
+    <div id="weekContent"></div>
+  </div>
+</div>
+ 
+<!-- FOOTER -->
+<footer class="site-footer">
+  <p>СОБЕРИ ВСЮ КОЛЛЕКЦИЮ · НОВЫЕ КАРТОЧКИ КАЖДЫЙ ПОНЕДЕЛЬНИК<br>⚡ УМСКУЛ · ОП ЧАТЫ ⚡</p>
+</footer>
+ 
+<script>
+/* ==========================================
+   DATA
+   ========================================== */
+let DATA = { weeks: [] };
+ 
+async function loadData() {
+  try {
+    const r = await fetch('data.json');
+    DATA = await r.json();
+  } catch(e) {
+    // Fallback demo data
+    DATA = {
+      weeks: [
+        {
+          id: "2026-w10", label: "1-я неделя марта 2026", date: "2026-03-09",
+          top: [
+            { name: "Анастасия Лыкова", photo: "", clients: 53, place: 1, title: "Повелитель чатов" },
+            { name: "Александр Мордвинцев", photo: "", clients: 48, place: 2, title: "Машина закрытий" },
+            { name: "Юлия Богатынская", photo: "", clients: 45, place: 3, title: "Снайпер конверсий" }
+          ]
+        },
+        {
+          id: "2026-w09", label: "4-я неделя февраля 2026", date: "2026-03-02",
+          top: [
+            { name: "Владлена Еремченкова", photo: "", clients: 31, place: 1, title: "Звёздный стратег" },
+            { name: "Александр Мордвинцев", photo: "", clients: 28, place: 2, title: "Тактик продаж" },
+            { name: "Евгения Пухова", photo: "", clients: 27, place: 3, title: "Огненный закрыватель" }
+          ]
+        }
+      ]
+    };
+  }
+  buildAll();
+}
+ 
+/* ==========================================
+   HELPERS
+   ========================================== */
+const rarityMap = { 1: 'LEGENDARY', 2: 'EPIC', 3: 'RARE' };
+const medals = { 1: '🥇', 2: '🥈', 3: '🥉' };
+ 
+function clientWord(n) {
+  n = parseInt(n);
+  if (n % 10 === 1 && n % 100 !== 11) return 'клиент';
+  if ([2,3,4].includes(n % 10) && ![12,13,14].includes(n % 100)) return 'клиента';
+  return 'клиентов';
+}
+ 
+function photoOrPlaceholder(src) {
+  if (src && src.length > 0) return `<img src="${src}" alt="" onerror="this.parentElement.innerHTML='<div class=placeholder-img>🦸</div>'">`;
+  return '<div class="placeholder-img">🦸</div>';
+}
+ 
+function buildLeaderboard() {
+  const map = {};
+  DATA.weeks.forEach(w => {
+    w.top.forEach(p => {
+      if (!map[p.name]) map[p.name] = { name: p.name, photo: p.photo, totalClients: 0, appearances: 0, legendary: 0, epic: 0, rare: 0, bestWeek: 0 };
+      const m = map[p.name];
+      m.totalClients += p.clients;
+      m.appearances++;
+      if (p.photo) m.photo = p.photo;
+      if (p.place === 1) m.legendary++;
+      else if (p.place === 2) m.epic++;
+      else m.rare++;
+      if (p.clients > m.bestWeek) m.bestWeek = p.clients;
+    });
+  });
+  return Object.values(map).sort((a,b) => b.totalClients - a.totalClients);
+}
+ 
+function getPersonCards(name) {
+  const cards = [];
+  DATA.weeks.forEach(w => {
+    w.top.forEach(p => {
+      if (p.name === name) cards.push({ ...p, weekId: w.id, weekLabel: w.label, weekDate: w.date });
+    });
+  });
+  return cards;
+}
+ 
+/* ==========================================
+   RENDER
+   ========================================== */
+function buildAll() {
+  renderHome();
+  renderArchive();
+  renderFullLeaderboard();
+  initParticles();
+  initCardEffects();
+}
+ 
+function renderHome() {
+  const latest = DATA.weeks[0];
+  if (!latest) return;
+ 
+  document.getElementById('homeWeekLabel').textContent = latest.label;
+  const maxC = Math.max(...latest.top.map(p => p.clients));
+ 
+  document.getElementById('homeCards').innerHTML = latest.top.map(p => {
+    const power = Math.round((p.clients / maxC) * 100);
+    const lb = buildLeaderboard();
+    const person = lb.find(x => x.name === p.name);
+    const streak = person ? person.appearances : 1;
+    const record = person ? person.bestWeek : p.clients;
+    return `
+    <div class="card-w">
+      <div class="card" data-place="${p.place}" onclick="openProfile('${p.name}')">
+        <div class="card-holo"></div>
+        <div class="card-rank">#${p.place}</div>
+        <div class="card-rarity">${rarityMap[p.place]}</div>
+        <div class="card-photo">${photoOrPlaceholder(p.photo)}<div class="card-photo-fade"></div></div>
+        <div class="card-body">
+          <div class="card-name">${p.name}</div>
+          <div class="card-role">Менеджер продаж</div>
+          <div class="card-stats">
+            <div class="stat stat-main"><div class="stat-val">${p.clients}</div><div class="stat-lbl">${clientWord(p.clients)}</div></div>
+            <div class="stat"><div class="stat-val">${record}</div><div class="stat-lbl">Рекорд</div></div>
+            <div class="stat"><div class="stat-val">${streak}🔥</div><div class="stat-lbl">В топе</div></div>
+            <div class="power-row"><div class="power-lbl">Power Level</div><div class="power-track"><div class="power-fill" data-width="${power}"></div></div></div>
+          </div>
+          <div class="card-title-row"><span>${['👑','⚡','🎯'][p.place-1]}</span><span>${p.title}</span></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+ 
+  // Home leaderboard (top 5)
+  const lb = buildLeaderboard().slice(0, 5);
+  document.getElementById('homeLeaderboard').innerHTML = lb.map((p, i) => `
+    <tr class="lb-row" onclick="openProfile('${p.name}')">
+      <td class="lb-pos ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${i+1}</td>
+      <td><div class="lb-name-cell"><img class="lb-avatar" src="${p.photo}" onerror="this.src='';this.style.background='var(--bg-surface)';this.style.display='flex'"><div><div class="lb-name">${p.name}</div></div></div></td>
+      <td><div class="lb-val">${p.totalClients}</div><div class="lb-sub">${clientWord(p.totalClients)} всего</div></td>
+      <td><div class="lb-badges">
+        ${p.legendary?`<span class="lb-badge legendary">${p.legendary}×L</span>`:''}
+        ${p.epic?`<span class="lb-badge epic">${p.epic}×E</span>`:''}
+        ${p.rare?`<span class="lb-badge rare">${p.rare}×R</span>`:''}
+      </div></td>
+    </tr>
+  `).join('');
+ 
+  setTimeout(() => {
+    document.querySelectorAll('.power-fill').forEach(el => { el.style.width = el.dataset.width + '%'; });
+  }, 500);
+}
+ 
+function renderArchive() {
+  document.getElementById('archiveGrid').innerHTML = DATA.weeks.map(w => `
+    <div class="archive-card" onclick="openWeek('${w.id}')">
+      <div class="archive-week">${w.label}</div>
+      <div class="archive-date">${w.date}</div>
+      <div class="archive-top3">
+        ${w.top.map(p => `
+          <div class="archive-entry">
+            <div class="archive-medal">${medals[p.place]}</div>
+            <img class="archive-img" src="${p.photo}" onerror="this.style.background='var(--bg-surface)';this.style.display='block'">
+            <div class="archive-info"><div class="archive-n">${p.name}</div></div>
+            <div class="archive-c">${p.clients}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+ 
+function renderFullLeaderboard() {
+  const lb = buildLeaderboard();
+  document.getElementById('fullLeaderboard').innerHTML = lb.map((p, i) => `
+    <tr class="lb-row" onclick="openProfile('${p.name}')">
+      <td class="lb-pos ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${i+1}</td>
+      <td><div class="lb-name-cell"><img class="lb-avatar" src="${p.photo}" onerror="this.style.background='var(--bg-surface)'"><div><div class="lb-name">${p.name}</div></div></div></td>
+      <td><div class="lb-val">${p.totalClients}</div><div class="lb-sub">${clientWord(p.totalClients)} всего</div></td>
+      <td><div class="lb-val">${p.appearances}</div><div class="lb-sub">раз в топе</div></td>
+      <td><div class="lb-val">${p.bestWeek}</div><div class="lb-sub">рекорд</div></td>
+      <td><div class="lb-badges">
+        ${p.legendary?`<span class="lb-badge legendary">${p.legendary}×L</span>`:''}
+        ${p.epic?`<span class="lb-badge epic">${p.epic}×E</span>`:''}
+        ${p.rare?`<span class="lb-badge rare">${p.rare}×R</span>`:''}
+      </div></td>
+    </tr>
+  `).join('');
+}
+ 
+function openProfile(name) {
+  const cards = getPersonCards(name);
+  if (!cards.length) return;
+  const lb = buildLeaderboard();
+  const person = lb.find(x => x.name === name);
+ 
+  const el = document.getElementById('profileContent');
+  el.innerHTML = `
+    <div class="profile-header">
+      <img class="profile-photo" src="${person.photo}" onerror="this.style.background='var(--bg-surface)'">
+      <div class="profile-info">
+        <h2>${name}</h2>
+        <div class="profile-role">Менеджер продаж · ОП Чаты</div>
+        <div class="profile-stats-row">
+          <div class="profile-stat"><div class="profile-stat-val">${person.totalClients}</div><div class="profile-stat-lbl">${clientWord(person.totalClients)} всего</div></div>
+          <div class="profile-stat"><div class="profile-stat-val">${person.appearances}</div><div class="profile-stat-lbl">раз в топе</div></div>
+          <div class="profile-stat"><div class="profile-stat-val">${person.bestWeek}</div><div class="profile-stat-lbl">рекорд</div></div>
+          <div class="profile-stat"><div class="profile-stat-val">${person.legendary}</div><div class="profile-stat-lbl">legendary</div></div>
+          <div class="profile-stat"><div class="profile-stat-val">${person.epic}</div><div class="profile-stat-lbl">epic</div></div>
+          <div class="profile-stat"><div class="profile-stat-val">${person.rare}</div><div class="profile-stat-lbl">rare</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="profile-collection-title">🃏 Коллекция карточек (${cards.length})</div>
+    <div class="profile-cards-grid">
+      ${cards.map(c => `
+        <div class="mini-card" data-place="${c.place}" onclick="openWeek('${c.weekId}')">
+          <div class="mini-card-top">
+            <div class="mini-card-week">${c.weekLabel}</div>
+            <div class="mini-card-rarity">${rarityMap[c.place]}</div>
+          </div>
+          <div class="mini-card-body">
+            <div class="mini-card-place">#${c.place}</div>
+            <div>
+              <div class="mini-card-clients">${c.clients} <span class="mini-card-clbl">${clientWord(c.clients)}</span></div>
+              <div class="mini-card-title-text">${c.title}</div>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  navigate('profile');
+}
+ 
+function openWeek(weekId) {
+  const w = DATA.weeks.find(x => x.id === weekId);
+  if (!w) return;
+  const maxC = Math.max(...w.top.map(p => p.clients));
+  const el = document.getElementById('weekContent');
+  el.innerHTML = `
+    <div class="hero" style="padding-top:20px">
+      <h1 class="hero-title" style="font-size:clamp(32px,5vw,60px)">ГЕРОИ НЕДЕЛИ</h1>
+      <p class="hero-week">${w.label}</p>
+    </div>
+    <div class="cards-row">
+      ${w.top.map(p => {
+        const power = Math.round((p.clients / maxC) * 100);
+        return `
+        <div class="card-w">
+          <div class="card" data-place="${p.place}" onclick="openProfile('${p.name}')">
+            <div class="card-holo"></div>
+            <div class="card-rank">#${p.place}</div>
+            <div class="card-rarity">${rarityMap[p.place]}</div>
+            <div class="card-photo">${photoOrPlaceholder(p.photo)}<div class="card-photo-fade"></div></div>
+            <div class="card-body">
+              <div class="card-name">${p.name}</div>
+              <div class="card-role">Менеджер продаж</div>
+              <div class="card-stats">
+                <div class="stat stat-main"><div class="stat-val">${p.clients}</div><div class="stat-lbl">${clientWord(p.clients)}</div></div>
+                <div class="power-row"><div class="power-lbl">Power Level</div><div class="power-track"><div class="power-fill" style="width:${power}%"></div></div></div>
+              </div>
+              <div class="card-title-row"><span>${['👑','⚡','🎯'][p.place-1]}</span><span>${p.title}</span></div>
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+  navigate('week');
+  setTimeout(initCardEffects, 100);
+}
+ 
+/* ==========================================
+   NAVIGATION
+   ========================================== */
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  const navBtn = document.querySelector(`.nav-link[data-page="${page}"]`);
+  if (navBtn) navBtn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (page === 'home') setTimeout(() => {
+    document.querySelectorAll('.power-fill').forEach(el => { el.style.width = el.dataset.width + '%'; });
+    initCardEffects();
+  }, 100);
+}
+ 
+/* ==========================================
+   EFFECTS
+   ========================================== */
+function initParticles() {
+  const c = document.getElementById('particles');
+  const cols = ['#FFD700','#C0C0FF','#FF6B6B','#FFA500','#7B68EE'];
+  for (let i = 0; i < 25; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random()*100+'%';
+    p.style.animationDuration = (7+Math.random()*8)+'s';
+    p.style.animationDelay = Math.random()*12+'s';
+    p.style.background = cols[Math.floor(Math.random()*cols.length)];
+    const s = (2+Math.random()*2)+'px';
+    p.style.width = s; p.style.height = s;
+    c.appendChild(p);
+  }
+}
+ 
+function initCardEffects() {
+  document.querySelectorAll('.card').forEach(card => {
+    card.onmousemove = e => {
+      const r = card.getBoundingClientRect();
+      const x = e.clientX - r.left, y = e.clientY - r.top;
+      const rx = (y - r.height/2) / 25, ry = (r.width/2 - x) / 25;
+      card.style.transform = `translateY(-10px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+      const h = card.querySelector('.card-holo');
+      if (h) {
+        h.style.background = `radial-gradient(circle at ${(x/r.width)*100}% ${(y/r.height)*100}%, rgba(255,255,255,.1) 0%, rgba(255,215,0,.05) 25%, transparent 50%)`;
+        h.style.opacity = '1';
+      }
+    };
+    card.onmouseleave = () => {
+      card.style.transform = '';
+      const h = card.querySelector('.card-holo');
+      if (h) h.style.opacity = '0';
+    };
+  });
+}
+ 
+/* ==========================================
+   INIT
+   ========================================== */
+loadData();
+</script>
+</body>
+</html>
